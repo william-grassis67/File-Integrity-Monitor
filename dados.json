@@ -1,6 +1,8 @@
-{
-    "arquivo": "arquivo_criptografado.txt",
-    "data": "13/11/2026",
-    "horario": "21:29",
-    "hash": "dfb81b902e39b758d0de3c0c7a21cf32c9aef00496a1a3d787fe102b4af0362e"
-}
+[
+    {
+        "arquivo": "pasta_criptografada/arquivo_criptografado.txt",
+        "data": "14/11/2026",
+        "hash": "f2dfe9f3f0a1209551468df5d03ddaff55f39d1444150afd5d763aef724bc34a",
+        "horario": "19:35:9"
+    }
+]

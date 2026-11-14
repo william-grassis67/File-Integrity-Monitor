@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import json
 import time
+from pathlib import Path
 
 os.system("clear")
 
@@ -20,57 +21,65 @@ logo="""
 
 print(logo)
 
+
 def archiveAdd():
+    now = datetime.now()
 
-	print("What a name of archive?:")
-	archive = input("> ")
+    arquivos_json=[]
+    print("What a name of past?:")
+    #AQUI ELE VAI PEGAR O NOME DA PASTA
+    pastas = input("> ")
 
-	with open(archive, "r") as arqv:
-		conteudo = arqv.read()
-		res = hashlib.sha256(conteudo.encode())
-		hash_arquivo_original = res.hexdigest()
+    #MANDA O PATH PEGAR A PASTA
+    pasta = Path(pastas)
+    #AQUI VAMOSTRAR TODOS OS ARQUIVOS DESTA PASTA
+    if pasta.exists() and pasta.is_dir():
+        for arquivo in pasta.iterdir():
+            if arquivo.is_file():
+                with open(arquivo, "r") as a:
+                    conteudo = a.read()
+                    res = hashlib.sha256(conteudo.encode())
+                    hash = res.hexdigest()
 
-	now=datetime.now()
+                dados_arquivo = {
+                    "arquivo": f"{arquivo}",
+                    "data": f"{now.day}/{now.month}/{now.year}",
+                    "hash": f"{hash}",
+                    "horario": f"{now.hour}:{now.minute}:{now.second}"
+                }
 
-	dados_criacao = {
-		"arquivo": archive,
-		"data": f"{now.day}/{now.month}/{now.year}",
-		"horario": f"{now.hour}:{now.minute}",
-		"hash": hash_arquivo_original,
-	}
+                arquivos_json.append(dados_arquivo)
+
+                with open("dados.json", "w") as dados:
+                    json.dump(arquivos_json, dados, indent=4)
+            else:
+                print("Archives not found.")
+    #FUNÇÃO EM DESENVOLVIMENTO
+    def comparador():
+        with open("dados.json", "r") as dados:
+            arquivos_antigos = json.load(dados)
+
+            for arquivo, hash_antigo in arquivos_antigos.items():
+
+                hash_atual = calcular_hash(arquivo)
+
+                if hash_antigo["hash"] == hash_atual:
+                    print(f"{arquivo}: Integrity OK")
+                else:
+                    print(f"{arquivo}: FILE MODIFIED!")
+
+    comparador()
+
+    def monitoramento():
+
+        hashs=[]
+
+        while True:
+            with open("dados.json", "r") as arquivo:
+                dados = json.load(arquivo)
 
 
-	with open("dados.json", "w") as arquivo:
-		json.dump(dados_criacao, arquivo, indent=4)
 
-	print("Hash foi gravado")
-
-
-	def analisarJson():
-
-		logs=[]
-
-		while True:
-			with open("dados.json", "r") as arquivo:
-				dados = json.load(arquivo)
-				hash_arquivo = dados["hash"]
-				time.sleep(1)
-				if hash_arquivo != hash_arquivo_original:
-					print("OUVE MUDANÇA DO ARQUIVO")
-					dados_logs = {
-						"arquivo": archive,
-						"data": f"{now.day}/{now.month}/{now.year}",
-						"hora": f"{now.hour}:{now.minute}"
-					}
-
-					logs.append(dados_logs)
-
-					with open("logs.json", "w") as logs_archive:
-						json.dump(logs, logs_archive, indent=4)
-				else:
-					print("ANALISANDO ARQUIVO...")
-
-	analisarJson()
 
 #FIM DA FUNÇÃO DE ANALISAR LOGS
 archiveAdd()
